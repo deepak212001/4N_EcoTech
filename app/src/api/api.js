@@ -3,7 +3,8 @@
  * Change API_BASE_URL to your backend.
  */
 
-const API_BASE_URL = 'https://your-api.example.com';
+/** Server: app.use("/api/auth", ...) → base ends with /api */
+const API_BASE_URL = 'http://192.168.1.1:8000/api';
 
 let authToken = null;
 
@@ -67,7 +68,35 @@ export async function login(body) {
     }),
   });
   const token =
-    data?.token || data?.access_token || data?.accessToken || null;
+    data?.token ||
+    data?.data?.token ||
+    data?.access_token ||
+    data?.accessToken ||
+    null;
+  if (token) {
+    setAuthToken(token);
+  }
+  return data;
+}
+
+/**
+ * @param {{ name: string; email: string; password: string }} body
+ */
+export async function register(body) {
+  const data = await apiRequest('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: body.name.trim(),
+      email: body.email.trim(),
+      password: body.password,
+    }),
+  });
+  const token =
+    data?.token ||
+    data?.data?.token ||
+    data?.access_token ||
+    data?.accessToken ||
+    null;
   if (token) {
     setAuthToken(token);
   }

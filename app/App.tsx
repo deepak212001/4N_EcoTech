@@ -17,32 +17,55 @@ import {
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { clearAuthToken } from './src/api/api';
 import LoginScreen from './src/screens/LoginScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const [session, setSession] = useState(null);
+  const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
 
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       {session ? (
         <HomeAfterLogin
+          session={session}
           onLogout={() => {
             clearAuthToken();
             setSession(null);
           }}
         />
+      ) : authScreen === 'register' ? (
+        <RegisterScreen
+          onRegistered={data => setSession(data)}
+          onGoToLogin={() => setAuthScreen('login')}
+        />
       ) : (
-        <LoginScreen onLoggedIn={data => setSession(data)} />
+        <LoginScreen
+          onLoggedIn={data => setSession(data)}
+          onGoToRegister={() => setAuthScreen('register')}
+        />
       )}
     </SafeAreaProvider>
   );
 }
 
-function HomeAfterLogin({ onLogout }: { onLogout: () => void }) {
+type SessionPayload = {
+  data?: { name?: string; email?: string };
+  message?: string;
+};
+
+function HomeAfterLogin({
+  session,
+  onLogout,
+}: {
+  session: SessionPayload | null;
+  onLogout: () => void;
+}) {
+  const displayName = session?.data?.name || session?.data?.email || 'User';
   return (
     <View style={styles.home}>
-      <Text style={styles.homeTitle}>Logged in</Text>
+      <Text style={styles.homeTitle}>Hi, {displayName}</Text>
       <Text style={styles.homeHint}>Backend se token save ho chuka hai (memory).</Text>
       <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
         <Text style={styles.logoutText}>Logout</Text>

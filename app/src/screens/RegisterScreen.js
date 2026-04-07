@@ -3,17 +3,18 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { login } from '../api/api';
+import { register } from '../api/api';
 
-export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
+export default function RegisterScreen({ onRegistered, onGoToLogin }) {
   const insets = useSafeAreaInsets();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,10 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
 
   async function handleSubmit() {
     setError('');
+    if (!name.trim()) {
+      setError('Name enter karein');
+      return;
+    }
     if (!email.trim()) {
       setError('Email enter karein');
       return;
@@ -29,13 +34,17 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
       setError('Password enter karein');
       return;
     }
+    if (password.length < 6) {
+      setError('Password kam se kam 6 characters ka ho');
+      return;
+    }
 
     setLoading(true);
     try {
-      const data = await login({ email, password });
-      onLoggedIn?.(data);
+      const data = await register({ name, email, password });
+      onRegistered?.(data);
     } catch (e) {
-      setError(e.message || 'Login fail ho gaya');
+      setError(e.message || 'Register fail ho gaya');
     } finally {
       setLoading(false);
     }
@@ -46,9 +55,25 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
       style={[styles.root, { paddingTop: insets.top + 24 }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
-      <View style={styles.inner}>
-        <Text style={styles.title}>Welcome back</Text>
-        <Text style={styles.subtitle}>Apna account mein sign in karein</Text>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>Account banayein</Text>
+        <Text style={styles.subtitle}>
+          Name, email aur password se sign up karein
+        </Text>
+
+        <Text style={styles.label}>Name</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Aapka naam"
+          placeholderTextColor="#94a3b8"
+          autoCapitalize="words"
+          value={name}
+          onChangeText={setName}
+          editable={!loading}
+        />
 
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -66,7 +91,7 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
         <Text style={styles.label}>Password</Text>
         <TextInput
           style={styles.input}
-          placeholder="••••••••"
+          placeholder="Kam se kam 6 characters"
           placeholderTextColor="#94a3b8"
           secureTextEntry
           value={password}
@@ -85,19 +110,19 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Sign in</Text>
+            <Text style={styles.buttonText}>Sign up</Text>
           )}
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.linkRow}
-          onPress={onGoToRegister}
+          onPress={onGoToLogin}
           disabled={loading}
           hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}>
-          <Text style={styles.linkMuted}>Naya account? </Text>
-          <Text style={styles.link}>Register</Text>
+          <Text style={styles.linkMuted}>Pehle se account hai? </Text>
+          <Text style={styles.link}>Sign in</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -107,9 +132,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0f172a',
   },
-  inner: {
-    flex: 1,
+  scrollContent: {
     paddingHorizontal: 24,
+    paddingBottom: 32,
   },
   title: {
     fontSize: 28,
@@ -120,7 +145,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 15,
     color: '#94a3b8',
-    marginBottom: 32,
+    marginBottom: 28,
   },
   label: {
     fontSize: 13,
@@ -135,7 +160,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 14 : 12,
     fontSize: 16,
     color: '#f8fafc',
-    marginBottom: 18,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: '#334155',
   },
@@ -145,7 +170,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   button: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#22c55e',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',

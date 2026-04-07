@@ -22,11 +22,11 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
   async function handleSubmit() {
     setError('');
     if (!email.trim()) {
-      setError('Email enter karein');
+      setError('Please enter your email');
       return;
     }
     if (!password) {
-      setError('Password enter karein');
+      setError('Please enter your password');
       return;
     }
 
@@ -35,7 +35,7 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
       const data = await login({ email, password });
       onLoggedIn?.(data);
     } catch (e) {
-      setError(e.message || 'Login fail ho gaya');
+      setError(e.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -48,7 +48,7 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
       <View style={styles.inner}>
         <Text style={styles.title}>Welcome back</Text>
-        <Text style={styles.subtitle}>Apna account mein sign in karein</Text>
+        <Text style={styles.subtitle}>Sign in to your account</Text>
 
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -94,7 +94,7 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
           onPress={onGoToRegister}
           disabled={loading}
           hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}>
-          <Text style={styles.linkMuted}>Naya account? </Text>
+          <Text style={styles.linkMuted}>{"Don't have an account? "}</Text>
           <Text style={styles.link}>Register</Text>
         </TouchableOpacity>
       </View>

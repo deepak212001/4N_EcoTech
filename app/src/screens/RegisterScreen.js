@@ -23,19 +23,19 @@ export default function RegisterScreen({ onRegistered, onGoToLogin }) {
   async function handleSubmit() {
     setError('');
     if (!name.trim()) {
-      setError('Name enter karein');
+      setError('Please enter your name');
       return;
     }
     if (!email.trim()) {
-      setError('Email enter karein');
+      setError('Please enter your email');
       return;
     }
     if (!password) {
-      setError('Password enter karein');
+      setError('Please enter your password');
       return;
     }
     if (password.length < 6) {
-      setError('Password kam se kam 6 characters ka ho');
+      setError('Password must be at least 6 characters');
       return;
     }
 
@@ -44,7 +44,7 @@ export default function RegisterScreen({ onRegistered, onGoToLogin }) {
       const data = await register({ name, email, password });
       onRegistered?.(data);
     } catch (e) {
-      setError(e.message || 'Register fail ho gaya');
+      setError(e.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -59,15 +59,15 @@ export default function RegisterScreen({ onRegistered, onGoToLogin }) {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Account banayein</Text>
+        <Text style={styles.title}>Create an account</Text>
         <Text style={styles.subtitle}>
-          Name, email aur password se sign up karein
+          Sign up with your name, email, and password
         </Text>
 
         <Text style={styles.label}>Name</Text>
         <TextInput
           style={styles.input}
-          placeholder="Aapka naam"
+          placeholder="Your name"
           placeholderTextColor="#94a3b8"
           autoCapitalize="words"
           value={name}
@@ -91,7 +91,7 @@ export default function RegisterScreen({ onRegistered, onGoToLogin }) {
         <Text style={styles.label}>Password</Text>
         <TextInput
           style={styles.input}
-          placeholder="Kam se kam 6 characters"
+          placeholder="At least 6 characters"
           placeholderTextColor="#94a3b8"
           secureTextEntry
           value={password}
@@ -119,7 +119,7 @@ export default function RegisterScreen({ onRegistered, onGoToLogin }) {
           onPress={onGoToLogin}
           disabled={loading}
           hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}>
-          <Text style={styles.linkMuted}>Pehle se account hai? </Text>
+          <Text style={styles.linkMuted}>Already have an account? </Text>
           <Text style={styles.link}>Sign in</Text>
         </TouchableOpacity>
       </ScrollView>

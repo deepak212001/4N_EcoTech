@@ -3,9 +3,15 @@
  * Change API_BASE_URL to your backend.
  */
 
-/** Server: app.use("/api/auth", ...) → base ends with /api */
-const API_BASE_URL = 'http://192.168.1.1:8000/api';
+import {
+  writePersistedToken,
+} from '../auth/tokenPersist';
 
+/** Server: app.use("/api/auth", ...) → base ends with /api */
+const API_BASE_URL = 'http://192.168.1.2:8000/api'
+// http://10.0.2.2:8000/api/v1
+// const API_BASE_URL = 'https://4-n-eco-tech-three.vercel.app/api/v1';
+// https://4-n-eco-tech-three.vercel.app/
 let authToken = null;
 
 export function setAuthToken(token) {
@@ -75,6 +81,7 @@ export async function login(body) {
     null;
   if (token) {
     setAuthToken(token);
+    await writePersistedToken(token);
   }
   return data;
 }
@@ -99,8 +106,51 @@ export async function register(body) {
     null;
   if (token) {
     setAuthToken(token);
+    await writePersistedToken(token);
   }
   return data;
+}
+
+/** GET /api/auth/me — requires Bearer; validates token and returns current user */
+export async function getCurrentUser() {
+  return apiRequest('/auth/me', { method: 'GET' });
+}
+
+/** GET /api/appointments — requires Bearer token */
+export async function listMyAppointments() {
+  return apiRequest('/appointments', { method: 'GET' });
+}
+
+/** DELETE /api/appointments/:id */
+export async function cancelAppointment(id) {
+  const safeId = encodeURIComponent(String(id));
+  return apiRequest(`/appointments/${safeId}`, { method: 'DELETE' });
+}
+
+/** GET /api/providers */
+export async function listProviders() {
+  return apiRequest('/providers', { method: 'GET' });
+}
+
+/** GET /api/providers/:id — details + available slots (booked filtered server-side) */
+export async function getProviderById(id) {
+  const safeId = encodeURIComponent(String(id));
+  return apiRequest(`/providers/${safeId}`, { method: 'GET' });
+}
+
+/**
+ * POST /api/appointments — requires Bearer token
+ * @param {{ providerId: string; date: string; time: string }} body
+ */
+export async function bookAppointment(body) {
+  return apiRequest('/appointments', {
+    method: 'POST',
+    body: JSON.stringify({
+      providerId: String(body.providerId),
+      date: String(body.date),
+      time: String(body.time),
+    }),
+  });
 }
 
 export { API_BASE_URL };

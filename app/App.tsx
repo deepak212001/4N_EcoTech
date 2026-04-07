@@ -1,110 +1,16 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
  * @format
  */
 
-import React, { useState } from 'react';
-import {
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
-  View,
-} from 'react-native';
+import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { clearAuthToken } from './src/api/api';
-import LoginScreen from './src/screens/LoginScreen';
-import RegisterScreen from './src/screens/RegisterScreen';
+import AppContent from './AppContent';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-  const [session, setSession] = useState(null);
-  const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
-
+/** No hooks here — avoids "Rendered more hooks than during the previous render" with HMR / strict trees. */
+export default function App() {
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      {session ? (
-        <HomeAfterLogin
-          session={session}
-          onLogout={() => {
-            clearAuthToken();
-            setSession(null);
-          }}
-        />
-      ) : authScreen === 'register' ? (
-        <RegisterScreen
-          onRegistered={data => setSession(data)}
-          onGoToLogin={() => setAuthScreen('login')}
-        />
-      ) : (
-        <LoginScreen
-          onLoggedIn={data => setSession(data)}
-          onGoToRegister={() => setAuthScreen('register')}
-        />
-      )}
+      <AppContent />
     </SafeAreaProvider>
   );
 }
-
-type SessionPayload = {
-  data?: { name?: string; email?: string };
-  message?: string;
-};
-
-function HomeAfterLogin({
-  session,
-  onLogout,
-}: {
-  session: SessionPayload | null;
-  onLogout: () => void;
-}) {
-  const displayName = session?.data?.name || session?.data?.email || 'User';
-  return (
-    <View style={styles.home}>
-      <Text style={styles.homeTitle}>Hi, {displayName}</Text>
-      <Text style={styles.homeHint}>Backend se token save ho chuka hai (memory).</Text>
-      <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  home: {
-    flex: 1,
-    backgroundColor: '#0f172a',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  homeTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#f8fafc',
-    marginBottom: 8,
-  },
-  homeHint: {
-    fontSize: 14,
-    color: '#94a3b8',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  logoutBtn: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 10,
-    backgroundColor: '#334155',
-  },
-  logoutText: {
-    color: '#f8fafc',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
-
-export default App;

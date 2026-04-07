@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "app.app"
-               BlueprintName = "app"
-               ReferencedContainer = "container:app.xcodeproj">
+               BuildableName = "AppointmentApp.app"
+               BlueprintName = "AppointmentApp"
+               ReferencedContainer = "container:AppointmentApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "appTests.xctest"
-               BlueprintName = "appTests"
-               ReferencedContainer = "container:app.xcodeproj">
+               BuildableName = "AppointmentAppTests.xctest"
+               BlueprintName = "AppointmentAppTests"
+               ReferencedContainer = "container:AppointmentApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "app.app"
-            BlueprintName = "app"
-            ReferencedContainer = "container:app.xcodeproj">
+            BuildableName = "AppointmentApp.app"
+            BlueprintName = "AppointmentApp"
+            ReferencedContainer = "container:AppointmentApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "app.app"
-            BlueprintName = "app"
-            ReferencedContainer = "container:app.xcodeproj">
+            BuildableName = "AppointmentApp.app"
+            BlueprintName = "AppointmentApp"
+            ReferencedContainer = "container:AppointmentApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

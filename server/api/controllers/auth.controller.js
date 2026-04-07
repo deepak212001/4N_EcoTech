@@ -26,14 +26,15 @@ const register = asyncHandler(async (req, res) => {
     password,
   });
   const token = user.generateToken();
-  res.status(201).json({
-    success: true,
-    message: "Registered successfully",
-    data: {
-      token,
-      user: userPayload(user),
-    },
-  });
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+  res
+    .status(201)
+    .cookie("token", token, cookieOptions)
+    .json(new ApiResponse(201, user, "Registered successfully", true));
 });
 
 const login = asyncHandler(async (req, res) => {
@@ -52,14 +53,22 @@ const login = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid email or password");
   }
   const token = user.generateToken();
-  res.status(200).json({
-    success: true,
-    message: "Login successful",
-    data: {
-      token,
-      user: userPayload(user),
-    },
-  });
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+  res
+    .status(200)
+    .cookie("token", token, cookieOptions)
+    .json(new ApiResponse(200, user, "Login successful", true));
 });
 
-export {register, login};
+const logout = asyncHandler(async (req, res) => {
+  res
+    .status(200)
+    .clearCookie("token")
+    .json(new ApiResponse(200, null, "Logged out successfully", true));
+});
+
+export {register, login, logout};

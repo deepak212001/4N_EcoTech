@@ -36,9 +36,13 @@ userSchema.methods.comparePassword = async function (password) {
 };
 
 userSchema.methods.generateToken = function () {
-  return jwt.sign({id: this._id}, process.env.TOKEN_SECRET, {
-    expiresIn: process.env.TOKEN_EXPIRY || "7d",
-  });
+  return jwt.sign(
+    {id: this._id, role: "patient"},
+    process.env.TOKEN_SECRET,
+    {
+      expiresIn: process.env.TOKEN_EXPIRY || "7d",
+    }
+  );
 };
 
 const User = mongoose.model("User", userSchema);

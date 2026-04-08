@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { bookAppointment, getProviderById } from '../api/api';
+import { providerImageUri } from '../constants/avatars';
 
 export default function ProviderDetailScreen({
   providerId,
@@ -97,6 +99,10 @@ export default function ProviderDetailScreen({
           keyboardShouldPersistTaps="handled">
           {provider ? (
             <>
+              <Image
+                source={{ uri: providerImageUri(provider) }}
+                style={styles.heroAvatar}
+              />
               <Text style={styles.name}>{provider.name}</Text>
               <Text style={styles.category}>{provider.category}</Text>
 
@@ -200,6 +206,16 @@ const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: 20,
     paddingBottom: 32,
+  },
+  heroAvatar: {
+    width: 112,
+    height: 112,
+    borderRadius: 56,
+    alignSelf: 'center',
+    marginBottom: 16,
+    backgroundColor: '#334155',
+    borderWidth: 2,
+    borderColor: '#475569',
   },
   name: {
     fontSize: 24,

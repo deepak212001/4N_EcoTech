@@ -2,12 +2,14 @@ import {asyncHandler} from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import {User} from "../models/user.model.js";
+import {Provider} from "../models/provider.model.js";
 
 function userPayload(user) {
   return {
     id: user._id,
     name: user.name,
     email: user.email,
+    role: "patient",
     createdAt: user.createdAt,
   };
 }
@@ -21,6 +23,10 @@ const register = asyncHandler(async (req, res) => {
   const existing = await User.findOne({email: email.toLowerCase()});
   if (existing) {
     throw new ApiError(409, "Email already registered");
+  }
+  const asProvider = await Provider.findOne({email: email.toLowerCase()});
+  if (asProvider) {
+    throw new ApiError(409, "Email already registered as a provider");
   }
   const user = await User.create({
     name,

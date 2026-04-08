@@ -12,7 +12,11 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { login } from '../api/api';
 
-export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
+export default function LoginScreen({
+  onLoggedIn,
+  onGoToRegister,
+  onLoginAsProvider,
+}) {
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -96,6 +100,15 @@ export default function LoginScreen({ onLoggedIn, onGoToRegister }) {
           hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}>
           <Text style={styles.linkMuted}>{"Don't have an account? "}</Text>
           <Text style={styles.link}>Register</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.linkRow}
+          onPress={onLoginAsProvider}
+          disabled={loading}
+          hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}>
+          <Text style={styles.linkMuted}>Are you a provider? </Text>
+          <Text style={styles.link}>Login as provider</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

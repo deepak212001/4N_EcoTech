@@ -15,6 +15,7 @@ import {
 import {
   clearAuthToken,
   getCurrentUser,
+  getProviderMe,
   setAuthToken,
 } from './src/api/api';
 import {
@@ -26,8 +27,11 @@ import {
 } from './src/auth/authStorage';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
+import ProviderDashboardScreen from './src/screens/ProviderDashboardScreen';
 import ProviderDetailScreen from './src/screens/ProviderDetailScreen';
 import ProviderListScreen from './src/screens/ProviderListScreen';
+import ProviderLoginScreen from './src/screens/ProviderLoginScreen';
+import ProviderRegisterScreen from './src/screens/ProviderRegisterScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 
 export type MainRoute =
@@ -66,7 +70,9 @@ export default function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
   const [hydrated, setHydrated] = useState(false);
   const [session, setSession] = useState<AppSession | null>(null);
-  const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
+  const [authScreen, setAuthScreen] = useState<
+    'login' | 'register' | 'providerLogin' | 'providerRegister'
+  >('login');
   const [mainRoute, setMainRoute] = useState<MainRoute>({
     screen: 'dashboard',
   });
@@ -82,7 +88,25 @@ export default function AppContent() {
         setAuthToken(token);
 
         try {
-          const me = await getCurrentUser();
+          let me: {
+            statusCode?: number;
+            data?: Record<string, unknown>;
+            message?: string;
+            success?: number;
+          };
+          try {
+            me = await getCurrentUser();
+          } catch (err: unknown) {
+            const st =
+              err && typeof err === 'object' && 'status' in err
+                ? (err as { status?: number }).status
+                : undefined;
+            if (st === 403) {
+              me = await getProviderMe();
+            } else {
+              throw err;
+            }
+          }
           if (cancelled) {
             return;
           }
@@ -156,25 +180,67 @@ export default function AppContent() {
       </View>
     );
   } else if (!session) {
-    body =
-      authScreen === 'register' ? (
+    if (authScreen === 'providerRegister') {
+      body = (
+        <ProviderRegisterScreen
+          onRegistered={data => commitSession(data)}
+          onBackToProviderLogin={() => setAuthScreen('providerLogin')}
+        />
+      );
+    } else if (authScreen === 'providerLogin') {
+      body = (
+        <ProviderLoginScreen
+          onLoggedIn={data => commitSession(data)}
+          onGoToProviderRegister={() => setAuthScreen('providerRegister')}
+          onBackToPatient={() => setAuthScreen('login')}
+        />
+      );
+    } else if (authScreen === 'register') {
+      body = (
         <RegisterScreen
           onRegistered={data => commitSession(data)}
           onGoToLogin={() => setAuthScreen('login')}
         />
-      ) : (
+      );
+    } else {
+      body = (
         <LoginScreen
           onLoggedIn={data => commitSession(data)}
           onGoToRegister={() => setAuthScreen('register')}
+          onLoginAsProvider={() => setAuthScreen('providerLogin')}
         />
       );
+    }
+  } else if (session?.data?.role === 'provider') {
+    body = (
+      <ProviderDashboardScreen
+        session={session}
+        onSessionUpdate={next => {
+          setSession(next);
+          saveAuth(next as { data?: { token?: string } }).catch(() => {});
+        }}
+        onLogout={async () => {
+          clearAuthToken();
+          try {
+            await clearStoredAuth();
+          } catch {
+            /* still leave app */
+          }
+          setSession(null);
+        }}
+      />
+    );
   } else if (mainRoute.screen === 'dashboard') {
     body = (
       <HomeScreen
         session={session}
-        onLogout={() => {
+        onLogout={async () => {
           clearAuthToken();
-          clearStoredAuth().catch(() => {});
+          try {
+            await clearStoredAuth();
+          } catch {
+            /* still leave app */
+          }
           setSession(null);
         }}
         onBookAppointment={() => setMainRoute({ screen: 'providers' })}

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -9,6 +10,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { listProviders } from '../api/api';
+import { providerImageUri } from '../constants/avatars';
 
 export default function ProviderListScreen({ onBack, onSelectProvider }) {
   const insets = useSafeAreaInsets();
@@ -48,8 +50,14 @@ export default function ProviderListScreen({ onBack, onSelectProvider }) {
         style={styles.card}
         onPress={() => onSelectProvider(item._id)}
         activeOpacity={0.85}>
-        <Text style={styles.cardTitle}>{item.name}</Text>
-        <Text style={styles.cardMeta}>{item.category}</Text>
+        <Image
+          source={{ uri: providerImageUri(item) }}
+          style={styles.avatar}
+        />
+        <View style={styles.cardText}>
+          <Text style={styles.cardTitle}>{item.name}</Text>
+          <Text style={styles.cardMeta}>{item.category}</Text>
+        </View>
       </TouchableOpacity>
     );
   }
@@ -140,12 +148,27 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   card: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#1e293b',
     borderRadius: 12,
-    padding: 16,
+    padding: 14,
     marginBottom: 12,
     borderWidth: 1,
     borderColor: '#334155',
+    gap: 14,
+  },
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#334155',
+    borderWidth: 1,
+    borderColor: '#475569',
+  },
+  cardText: {
+    flex: 1,
+    minWidth: 0,
   },
   cardTitle: {
     fontSize: 17,

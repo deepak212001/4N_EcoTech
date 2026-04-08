@@ -16,10 +16,17 @@ app.use(
   })
 );
 
-app.use(express.json());
+app.use(express.json({limit: "12mb"}));
 app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
 app.use(cookieParser());
+
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith("/api")) {
+    console.log(`[HTTP] ${req.method} ${req.originalUrl}`);
+  }
+  next();
+});
 
 app.use("/api/auth", authRouter);
 app.use("/api/providers", providerRouter);

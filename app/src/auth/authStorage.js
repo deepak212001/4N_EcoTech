@@ -2,14 +2,21 @@
  * Session JSON cache (optional). Token lives in tokenPersist.js.
  */
 
+import { readPersistedToken, writePersistedToken } from './tokenPersist';
 import {
-  clearPersistedToken,
-  readPersistedToken,
-  writePersistedToken,
-} from './tokenPersist';
-import { safeGetItem, safeRemoveItem, safeSetItem } from './safeAsyncStorage';
+  safeGetItem,
+  safeMultiRemove,
+  safeSetItem,
+} from './safeAsyncStorage';
 
 const KEY_SESSION = '@AppointmentApp.auth.session';
+
+/** Same keys as tokenPersist + session cache — wiped together on logout. */
+const AUTH_STORAGE_KEYS = [
+  '@AppointmentApp.auth.token',
+  '@AppointmentApp.auth.v1',
+  KEY_SESSION,
+];
 
 function pickTokenFromSession(session) {
   if (!session || typeof session !== 'object') {
@@ -67,11 +74,7 @@ export function cachedTokenMatchesSession(session, token) {
   return pickTokenFromSession(session) === token;
 }
 
+/** Remove JWT, legacy auth blob, and cached session JSON from AsyncStorage. */
 export async function clearStoredAuth() {
-  await clearPersistedToken();
-  try {
-    await safeRemoveItem(KEY_SESSION);
-  } catch {
-    // ignore
-  }
+  await safeMultiRemove(AUTH_STORAGE_KEYS);
 }

@@ -331,11 +331,11 @@ export default function ProviderDashboardScreen({
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.sectionTitle}>Your availability</Text>
-          <Text style={styles.sectionHint}>
+          {/* <Text style={styles.sectionHint}>
             {Platform.OS === 'android'
               ? 'Android: Pick time → system clock opens → OK adds that time. Repeat Pick time for more slots, then Save availability.'
               : 'Pick date → Pick time → Add time for each slot, then Done. Then Save availability.'}
-          </Text>
+          </Text> */}
 
           {slotDays.length === 0 ? (
             <Text style={styles.muted}>
@@ -437,7 +437,7 @@ export default function ProviderDashboardScreen({
             )}
           </TouchableOpacity>
 
-          <Text style={styles.apiHint} selectable>
+          {/* <Text style={styles.apiHint} selectable>
             API base: {API_BASE_URL}
           </Text>
           <TouchableOpacity
@@ -446,7 +446,7 @@ export default function ProviderDashboardScreen({
             activeOpacity={0.85}
           >
             <Text style={styles.testBtnText}>Test server (no login)</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <Text style={[styles.sectionTitle, styles.bookingsTitle]}>
             Bookings

@@ -2,10 +2,15 @@
  * Session JSON cache (optional). Token lives in tokenPersist.js.
  */
 
-import { readPersistedToken, writePersistedToken } from './tokenPersist';
+import {
+  clearPersistedToken,
+  readPersistedToken,
+  writePersistedToken,
+} from './tokenPersist';
 import {
   safeGetItem,
   safeMultiRemove,
+  safeRemoveItem,
   safeSetItem,
 } from './safeAsyncStorage';
 
@@ -74,7 +79,14 @@ export function cachedTokenMatchesSession(session, token) {
   return pickTokenFromSession(session) === token;
 }
 
-/** Remove JWT, legacy auth blob, and cached session JSON from AsyncStorage. */
+/**
+ * Remove JWT, legacy auth blob, and cached session JSON from AsyncStorage.
+ * Called on logout so the next app launch shows the login screen (no token on disk).
+ */
 export async function clearStoredAuth() {
+  await clearPersistedToken();
   await safeMultiRemove(AUTH_STORAGE_KEYS);
+  for (const key of AUTH_STORAGE_KEYS) {
+    await safeRemoveItem(key);
+  }
 }

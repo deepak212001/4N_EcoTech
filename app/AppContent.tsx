@@ -122,6 +122,7 @@ export default function AppContent() {
             clearAuthToken();
             await clearStoredAuth();
             if (!cancelled) {
+              setAuthScreen('login');
               setSession(null);
             }
           } else {
@@ -226,6 +227,7 @@ export default function AppContent() {
           } catch {
             /* still leave app */
           }
+          setAuthScreen('login');
           setSession(null);
         }}
       />
@@ -241,6 +243,7 @@ export default function AppContent() {
           } catch {
             /* still leave app */
           }
+          setAuthScreen('login');
           setSession(null);
         }}
         onBookAppointment={() => setMainRoute({ screen: 'providers' })}
